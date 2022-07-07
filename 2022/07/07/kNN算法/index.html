@@ -2,7 +2,7 @@
 <html>
 	<head>
 		
-<title>kNN算法-Yutong</title>
+<title>k近邻法（k-nearest neighbor, k-NN）学习笔记-Yutong</title>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -291,7 +291,7 @@
             
         </ul>
         
-        <h1>kNN算法</h1>
+        <h1>k近邻法（k-nearest neighbor, k-NN）学习笔记</h1>
         <div class="post-header-info">
             <div class="post-header-info-author">
                 
@@ -376,7 +376,8 @@
 <img src="/2022/07/07/kNN%E7%AE%97%E6%B3%95/image-20220706232126367.png" class title="image-20220706232126367">
 
 <h4 id="（3）准备数据：归一化"><a href="#（3）准备数据：归一化" class="headerlink" title="（3）准备数据：归一化"></a>（3）准备数据：归一化</h4><p>根据下表可以看到，特征”每年获得的飞行常客里程数“整体数值远高出另外两种特征，因此在计算两个实例间的距离时，该特征的影响会被放大，因此需要将数值归一化，即将取值范围处理为0到1或者-1到1之间（<strong>三个特征值都同时被处理归一</strong>）。</p>
-<p><img src="/../../../%E6%8A%80%E8%83%BD%E8%AE%AD%E7%BB%83%E6%9D%90%E6%96%99/%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90%E3%80%81%E6%95%B0%E6%8D%AE%E6%8C%96%E6%8E%98/%E5%AE%9E%E8%B7%B5%E9%A1%B9%E7%9B%AE/%E5%9B%BE%E7%89%87/image-20220705235917444.png" alt="image-20220705235917444"></p>
+<img src="/2022/07/07/kNN%E7%AE%97%E6%B3%95/image-20220705235917444.png" class title="image-20220705235917444">
+
 <p>具体归一化公式如下:<br>$$<br>newValue &#x3D; (oldValue - min)&#x2F;(max - min)<br>$$</p>
 <p>代码实现如下，主要思想是分别计算最大最小值，以及最大最小值之间的差，并在与原始值计算时将这些数值转化为矩阵模式来计算，按照如上的归一化公式计算得到最终新的特征矩阵：</p>
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><code class="hljs python3"># -*- coding: UTF-8 -<br>from 机器学习实践.kNN.kNN_dataset import file2matrix<br>import numpy as np<br><br><br>########特征数据归一化##########<br>&quot;&quot;&quot;<br>函数说明：对数据进行归一化<br><br>Parameters:<br>    dataSet - 特征矩阵<br>Returns:<br>    nomrDataSet - 归一化后的特征矩阵<br>    ranges - 数据范围<br>    minVals - 数据最小值<br><br>Modify:<br>    2022-07-06<br>&quot;&quot;&quot;<br><br><br>def autoNorm(dataSet):<br>	# 获得数据的最大最小值<br>	minVals = dataSet.min(0)<br>	maxVals = dataSet.max(0)<br>	ranges = maxVals - minVals<br>	# 获得dataSet的矩阵行列数，并据此形成零矩阵<br>	normDataSet = np.zeros(np.shape(dataSet))<br>	# 返回dataSet的行数<br>	m = dataSet.shape[0]<br>	# miVals在列向量上重复1次，在行向量上重复m次，计算原始数据和最小值之间的差<br>	normDataSet = dataSet - np.tile(minVals, (m, 1))<br>	# 归一化计算<br>	normDataSet = normDataSet / np.tile(ranges, (m, 1))<br>	return normDataSet, ranges, minVals<br><br>if __name__ == &#x27;__main__&#x27;:<br>	filename = &#x27;D:\技能训练材料\数据分析、数据挖掘\实践项目\kNN\datingTestSet.txt&#x27;<br>	datingDataMat, datingLabels = file2matrix(filename)<br>	normDataSet, ranges, minVals = autoNorm(datingDataMat)<br>	print(&quot;这是归一化矩阵\n&quot;,normDataSet)<br>	print(&quot;这是范围\n&quot;,ranges)<br>	print(&quot;这是最小值\n&quot;,minVals)<br></code></pre></td></tr></table></figure>
@@ -485,10 +486,10 @@ Fancybox.bind('[data-fancybox="fancybox-gallery-img"]', {
     
 
     
-    <a href="/2022/07/07/k%E8%BF%91%E9%82%BB%E6%B3%95-k-nearest-neighbor-k-NN/">
+    <a href="/2022/07/04/hello-world/">
         <div class="post-paging-next">
             <span>下一篇</span>
-            <p>k近邻法(k-nearest neighbor,k-NN)学习笔记</p>
+            <p>Hello World</p>
         </div>
     </a>
     
