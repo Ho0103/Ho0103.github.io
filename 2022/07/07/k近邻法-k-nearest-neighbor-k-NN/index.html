@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		
+<title>k近邻法(k-nearest neighbor,k-NN)学习笔记-Yutong</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="shortcut icon" type="image/x-icon" href="/image/favicon.ico">
+
+<link rel="stylesheet" href="/css/index.css">
+
+
+
+<meta name="keywords" content="Machine Learning,学习笔记,">
+<meta name="description" content="学习KNN算法理论和应用">
+
+
+<script src="/js/jquery.min.js"></script>
+
+
+<script src="/js/index.js"></script>
+
+
+<script src="/js/fancybox.umd.js"></script>
+
+
+<script src="/js/fancybox-images.js"></script>
+
+
+<script src="/js/gitalk.min.js"></script>
+
+
+<script src="/js/hljs.min.js"></script>
+
+<script>hljs.initHighlightingOnLoad();</script>
+
+	<meta name="generator" content="Hexo 6.2.0"></head>
+
+	<body>
+		
+	<div class="header">
+		<div class="header-top" id="header-top">
+			<div class="h-left">
+				<a href="/">
+					<img src="/image/logo.png" alt="Quiet">
+				</a>
+			</div>
+			<div class="h-right">
+				<ul>
+					
+						
+								<li>
+									<a href="/">
+										HOME
+									</a>
+									<span class="dot"></span>
+								</li>
+								
+									
+						
+								<li>
+									<a href="/archives">
+										ARCHIVE
+									</a>
+									<span class="dot"></span>
+								</li>
+								
+									
+						
+								<li>
+									<a href="/categories">
+										CATEGORIES
+									</a>
+									<span class="dot"></span>
+								</li>
+								
+									
+						
+								<li>
+									<a href="/tags">
+										TAGS
+									</a>
+									<span class="dot"></span>
+								</li>
+								
+									
+						
+								<li>
+									<a href="/links">
+										LINKS
+									</a>
+									<span class="dot"></span>
+								</li>
+								
+									
+						
+								<li>
+									<a href="/about">
+										ABOUT
+									</a>
+									<span class="dot"></span>
+								</li>
+								
+									
+				</ul>
+			</div>
+			<div class="h-right-close">
+				<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+					<path fill="none" d="M0 0h24v24H0z" />
+					<path d="M3 4h18v2H3V4zm0 7h18v2H3v-2zm0 7h18v2H3v-2z" fill="rgba(68,68,68,1)" />
+				</svg>
+			</div>
+		</div>
+	</div>
+	<div class="sidebar">
+    <div class="topo">
+        <h2>Yutong Zhu</h2>
+    </div>
+    <ul>
+        
+        <li>
+            <a href="/">HOME</a>
+        </li>
+        
+        <li>
+            <a href="/archives">ARCHIVE</a>
+        </li>
+        
+        <li>
+            <a href="/categories">CATEGORIES</a>
+        </li>
+        
+        <li>
+            <a href="/tags">TAGS</a>
+        </li>
+        
+        <li>
+            <a href="/links">LINKS</a>
+        </li>
+        
+        <li>
+            <a href="/about">ABOUT</a>
+        </li>
+        
+    </ul>
+    <div class="my_foot">
+        
+        <a target="_blank" rel="noopener" href="https://github.com/79E/hexo-theme-quiet">
+            <img src="https://cdn.jsdelivr.net/gh/duogongneng/MyBlogImg/imggithub.png" alt="Quiet主题">
+        </a>
+        
+    </div>
+</div>
+<div class='shelter'>
+</div>
+<style>
+    .shelter{
+        background-color: #333;
+        opacity:0.5;
+        cursor: pointer;
+        display: none; 
+        position: fixed;
+        left: 0;
+        top: 0; 
+        right: 0;
+        bottom: 0;
+        z-index: 1998;
+    }
+    .sidebar {
+        width: 0;
+        height: 100%;
+        position: fixed;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        background: #fff;
+        z-index: 1999;
+        text-align: center;
+        box-shadow: -6px 0 20px rgba(98, 94, 94, .815)
+    }
+
+    .topo {
+        width: 100%;
+        height: 200px;
+        background: url(https://api.ixiaowai.cn/gqapi/gqapi.php) no-repeat;
+        background-size: 100% 100%;
+        position: relative;
+        display: flex;
+        align-items: flex-end
+    }
+
+    .topo h2 {
+        color: #fff;
+        z-index: 1;
+        position: relative;
+        margin: 0 0 10px 10px;
+        font-size: 1.2em;
+        box-sizing: border-box
+    }
+
+    .topo:before {
+        content: '';
+        background-image: url(/image/pattern.png);
+        background-repeat: repeat;
+        height: 100%;
+        left: 0;
+        position: absolute;
+        top: 0;
+        width: 100%;
+        z-index: 1
+    }
+
+    .sidebar ul {
+        width: 100%;
+        margin-top: 50px
+    }
+
+    .sidebar ul li {
+        height: 50px;
+        list-style: none;
+        font-size: 1.2em;
+        text-align: right;
+        margin-right: 10px
+    }
+
+    .sidebar ul li a {
+        display: grid;
+        color: #5d606a;
+        text-overflow: ellipsis;
+        width: 100%;
+        text-decoration: none
+    }
+
+    .my_foot {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 10px;
+        position: absolute;
+        bottom: 0
+    }
+
+    .my_foot a {
+        text-decoration: none;
+        margin-right: 10px;
+        display: inline-block
+    }
+
+    .my_foot a img {
+        width: 30px;
+        height: 30px
+    }
+</style>
+
+<script>
+    $( function () {
+	$( '.h-right-close>svg' )
+		.click( function () {
+			$( '.sidebar' )
+				.animate( {
+					width: "66%"
+				}, 500 );
+			$( '.shelter' )
+				.fadeIn( "slow" )
+		} );
+	$( '.shelter' )
+		.click( function ( e ) {
+			$( '.sidebar' )
+				.animate( {
+					width: "0"
+				}, 500 );
+			$( '.shelter' )
+				.fadeOut( "slow" )
+		} )
+} )
+
+</script>
+
+<div class="post">
+    <div class="post-header-background post-header-img"
+    style="background: url('http://eett.cc/pictures?type=pc&category=fengjing')" 
+>
+    <div class="post-header-background-content">
+        <ul class="post-header-tag">
+            
+            
+            <li><a href="/tags/Machine Learning">Machine Learning</a></li>
+            
+            <li><a href="/tags/学习笔记">学习笔记</a></li>
+            
+            
+        </ul>
+        
+        <h1>k近邻法(k-nearest neighbor,k-NN)学习笔记</h1>
+        <div class="post-header-info">
+            <div class="post-header-info-author">
+                
+                    <svg t="1604839279282" class="icon" viewBox="0 0 1024 1024" version="1.1"
+                        xmlns="http://www.w3.org/2000/svg" p-id="2901" width="20" height="20">
+                        <path
+                            d="M513 956.3c-247.7 0-448-200.3-448-448S265.3 66.2 513 66.2s448 200.3 448 448-200.3 442.1-448 442.1z m0-830.9c-212.2 0-388.8 170.7-388.8 388.8C124.2 726.3 294.9 903 513 903c212.2 0 388.8-170.7 388.8-388.8S725.2 125.4 513 125.4z m0 430.2c-94.2 0-170.7-76.5-170.7-170.7S418.8 207.8 513 207.8s170.7 76.5 170.7 170.7S607.2 555.6 513 555.6z m0-289.1c-64.6 0-112 52.8-112 112s47.4 117.9 112 117.9 112-52.8 112-112-47.4-117.9-112-117.9z m0 689.8c-135.7 0-259-58.7-341.9-158.9l-11.8-17.8 11.8-17.8c76.5-117.9 206.2-188.5 347.8-188.5 135.7 0 265 64.6 341.9 182.6l11.8 17.8-11.8 17.8C778 897.1 648.7 956.3 513 956.3zM230.3 773.2C300.9 849.7 406.9 897 513 897c112 0 218.1-47.4 288.6-129.8-70.5-88.2-170.7-135.6-282.7-135.6s-218.1 53.3-288.6 141.6z"
+                            p-id="2902" fill="#ffffff"></path>
+                    </svg>
+                    
+                <span class="post-header-info-author-text"> <a href="../../about">Yutong Zhu</a></span>
+                <div class="post-header-info-author-categories">
+                    
+                         <a href="../../categories/Machine-Learning/" target="_blank" >Machine Learning</a>
+                    
+                </div>
+                <p>2022-07-07 15:48:02</p>
+            </div>
+        </div>
+    </div>
+</div>
+    <div class="post-content" id="content">
+  <div id="article" class="post-content-info">
+      <h1 id="k近邻法（k-nearest-neighbor-k-NN）"><a href="#k近邻法（k-nearest-neighbor-k-NN）" class="headerlink" title="k近邻法（k-nearest neighbor, k-NN）"></a>k近邻法（k-nearest neighbor, k-NN）</h1><p>参考：<a target="_blank" rel="noopener" href="https://cuijiahua.com/blog/2017/11/ml_1_knn.html/comment-page-2/#comments">机器学习实战教程（一）：K-近邻（KNN）算法（史诗级干货长文） (cuijiahua.com)</a></p>
+<p>​          《机器学习实战》</p>
+<p>​          《统计学习方法》</p>
+<h2 id="核心思想介绍"><a href="#核心思想介绍" class="headerlink" title="核心思想介绍"></a>核心思想介绍</h2><h3 id="1-算法简介"><a href="#1-算法简介" class="headerlink" title="1. 算法简介"></a>1. 算法简介</h3><p>给定一个训练数据集，对新的输入实例，在训练数据集中找到于该实例最邻近的k个实例，这k个实例的多数属于某个类，就把该输入实例分为这个类。</p>
+<p>模型主要由三个要素来决定：</p>
+<p><strong>距离度量、k值得选择和分类决策规则</strong></p>
+<h3 id="2-数理讲解"><a href="#2-数理讲解" class="headerlink" title="2. 数理讲解"></a>2. 数理讲解</h3><p>1）距离度量<br>$$<br>L_p(x_i,x_j)&#x3D;(\sum_{l&#x3D;1}^n|x_i^{(l)}-x_j^{(l)}|^p)^{1\p}<br>$$<br>主要引入较为普遍的欧式距离（二维情况下两点间距离）：p&gt;&#x3D;1，即p&#x3D;2时，<br>$$<br>L_2(x_i,x_j)&#x3D;(\sum_{l&#x3D;1}^n|x_i^{(l)}-x_j^{(l)}|^2)^{1\2}<br>$$<br>2）k值的选取会对该算法产生重大影响</p>
+<p><img src="/2022/07/07/k%E8%BF%91%E9%82%BB%E6%B3%95-k-nearest-neighbor-k-NN/../../%E6%8A%80%E8%83%BD%E8%AE%AD%E7%BB%83%E6%9D%90%E6%96%99/%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90%E3%80%81%E6%95%B0%E6%8D%AE%E6%8C%96%E6%8E%98/%E5%AE%9E%E8%B7%B5%E9%A1%B9%E7%9B%AE/%E5%9B%BE%E7%89%87/image-20220707153829905.png" alt="image-20220707153829905"></p>
+<p>3）分类决策规则</p>
+<p><img src="/2022/07/07/k%E8%BF%91%E9%82%BB%E6%B3%95-k-nearest-neighbor-k-NN/../../%E6%8A%80%E8%83%BD%E8%AE%AD%E7%BB%83%E6%9D%90%E6%96%99/%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90%E3%80%81%E6%95%B0%E6%8D%AE%E6%8C%96%E6%8E%98/%E5%AE%9E%E8%B7%B5%E9%A1%B9%E7%9B%AE/%E5%9B%BE%E7%89%87/image-20220707154133243.png" alt="image-20220707154133243"></p>
+<p>可以使误分类率最小，即经验风险最小。</p>
+<h3 id="3-算法代码主体部分"><a href="#3-算法代码主体部分" class="headerlink" title="3. 算法代码主体部分"></a>3. 算法代码主体部分</h3><p>代码实现如下，具体思路是输入一个实例，并将这个实例按照训练数据集实例个数，复制自身拓展为多维矩阵，分别与每一个训练数据集实例相减计算距离，将距离排序，筛选出最近的k个实例，了解k个实例中哪个类别的实例数量最多，那么就将这个类别判定给最新的这个实例。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><code class="hljs python3">import numpy as np<br><br>###2-1 k-近邻算法###<br>#inX是用于分类的输入向量，dataSet是训练集，labels是训练集对应的标签，k是最近邻实例的数量<br>def classify0(inX, dataSet, labels, k):<br>	#numpy的shape是查看矩阵或者数组的维数，shape[0]为读取数组第一维度的长度<br>	dataSetSize = dataSet.shape[0]<br>	#inX在列向量方向上重复共1次（横向），行向量方向上重复dataSetSize次（纵向），并与训练集矩阵相减<br>	diffMat = np.tile(inX, (dataSetSize,1)) - dataSet<br>	#求平方<br>	sqDiffMat = diffMat**2<br>	#sum()所有元素相加，sum(0)列相加，sum(1)行相加<br>	sqDistances = sqDiffMat.sum(axis=1)<br>	#开方，计算出距离<br>	distances = sqDistances**0.5<br>	#distances中元素从小到大排序后的索引值<br>	sortedDistIndicies = distances.argsort()<br>	#定一个记录类别次数的字典<br>	classCount = &#123;&#125;<br>	for i in range(k):<br>		#取出前k个元素的类别<br>		voteIlabel = labels[sortedDistIndicies[i]]<br>		#dict.get(key,default=None)，字典的get()方法，返回指定键的值，如果值不在字典中返回默认值。<br>		#计算类别次数<br>		classCount[voteIlabel] = classCount.get(voteIlabel,0) + 1<br>	#python3中用items()替换python2中的iteritems()，以列表方式返回字典中的键值对。<br>	#key=operator.itemgetter(1)按照字典的值进行排序<br>	#key=operator.itemgetter(0)根据字典的键进行排序<br>	#reverse降序排序字典<br>	sortedClassCount = sorted(classCount.items(),key=operator.itemgetter(1),reverse=True)<br>	#返回次数最多的类别，即索要分类的类别<br>	return sortedClassCount[0][0]<br><br></code></pre></td></tr></table></figure>
+
+<h2 id="应用案例一：使用k-近邻算法改进约会网站的配对效果"><a href="#应用案例一：使用k-近邻算法改进约会网站的配对效果" class="headerlink" title="应用案例一：使用k-近邻算法改进约会网站的配对效果"></a>应用案例一：使用k-近邻算法改进约会网站的配对效果</h2><h3 id="1-背景和所涉函数-amp-框架"><a href="#1-背景和所涉函数-amp-框架" class="headerlink" title="1. 背景和所涉函数&amp;框架"></a>1. 背景和所涉函数&amp;框架</h3><p>背景：海伦一直使用在线约会网站寻找约会对象，她根据经验将约会对象分为三类（不喜欢的人、魅力一般的人、极具魅力的人），她搜集了一些约会对象的数据（有3个特征，分别是每年获得的飞行常客里程数、玩视频游戏所耗时间百分比、每周消费的冰淇淋公升数），希望能采用kNN算法帮助她对未来的约会对象进行归类。</p>
+<p>函数清单：</p>
+<ul>
+<li>classify0(inX, dataSet, labels, k)</li>
+</ul>
+<p>​       inX是用于分类的输入向量，dataSet是训练集，labels是训练集对应的标签，k是最近邻实例的数量</p>
+<p>​       k-近邻算法，计算距离并预测新实例所属类别</p>
+<p>​       输出结果：sortedClassCount，是所属类别</p>
+<ul>
+<li><p>file2matrix(filename)</p>
+<p>filename是数据文件</p>
+<p>数据整理，把数据整理为两个矩阵，一个是特征矩阵，一个是分类矩阵，并为分类矩阵打好数字标签</p>
+<p>输出结果：datingDataMat 特征矩阵, datingLabels分类矩阵</p>
+</li>
+<li><p>showdatas(datingDataMat, datingLabels)</p>
+</li>
+</ul>
+<p>​       制作散点图</p>
+<ul>
+<li><p>autoNorm(dataSet)</p>
+<p>dataSet是特征矩阵</p>
+<p>按照归一化的公式来对原始特征矩阵进行处理</p>
+<p>输出结果：normDataSet新的特征矩阵, ranges最大最小值之间差, minVals最小值</p>
+</li>
+</ul>
+<h3 id="2-具体操作"><a href="#2-具体操作" class="headerlink" title="2. 具体操作"></a>2. 具体操作</h3><h4 id="（1）数据处理"><a href="#（1）数据处理" class="headerlink" title="（1）数据处理"></a>（1）数据处理</h4><p>测试数据描述：如下图，一共有1000个可选约会对象实例，前三列为特征向量（浮点数），最后一列为分类标签（字符）。</p>
+<p><img src="/2022/07/07/k%E8%BF%91%E9%82%BB%E6%B3%95-k-nearest-neighbor-k-NN/../../%E6%8A%80%E8%83%BD%E8%AE%AD%E7%BB%83%E6%9D%90%E6%96%99/%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90%E3%80%81%E6%95%B0%E6%8D%AE%E6%8C%96%E6%8E%98/%E5%AE%9E%E8%B7%B5%E9%A1%B9%E7%9B%AE/%E5%9B%BE%E7%89%87/image-20220705181116009.png" alt="image-20220705181116009"></p>
+<p>代码实现如下，主要思想是将文件内的数据按照行来打散成为字符串列表，按照每个实例（每行），将其前三列数值填充进形成好的零矩阵中，并将将最后一列标签值赋予数值，遍历所有实例，完成填充和赋值。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><code class="hljs python3"># -*- coding: UTF-8 -<br>import numpy as np<br><br>&quot;&quot;&quot;<br>函数说明：将数据转化为可用于分析的数据<br><br>Parameter:<br>    filename - 文件名<br>Returns：<br>    returnMat - 特征矩阵<br>    classLabelVector - 分类Label向量<br><br>Modify:<br>    2022-07-05<br>&quot;&quot;&quot;<br><br>def file2matrix(filename):<br>	fr = open(filename)<br>	# readlines()读取所有行，然后把它们作为一个字符串列表返回<br>	arrayOLines = fr.readlines()<br>	# 记录有多少个实例（行数）<br>	numberOlines = len(arrayOLines)<br>	# 返回一个numberOgLines*3且都为0的数组<br>	returnMat = np.zeros((numberOlines, 3))<br>	# 设置分类标签向量和实例（行）的索引值<br>	classLabelVector = []<br>	index = 0<br>	for line in arrayOLines:<br>		# s.strip(rm)，当rm空时,默认删除空白符(包括&#x27;\n&#x27;,&#x27;\r&#x27;,&#x27;\t&#x27;,&#x27; &#x27;)<br>		line = line.strip()<br>		# 将字符串根据&#x27;\t&#x27;分隔符进行切片<br>		listFromLine = line.split(&#x27;\t&#x27;)<br>		# 将数据前三列提取出来,存放到returnMat的NumPy矩阵(原本都是零矩阵）中,也就是特征矩阵<br>		returnMat[index, :] = listFromLine[0:3]<br>		# 根据文本中标记的喜欢的程度进行分类,1代表不喜欢,2代表魅力一般,3代表极具魅力<br>		if listFromLine[-1] == &#x27;didntLike&#x27;:<br>			classLabelVector.append(1)<br>		elif listFromLine[-1] == &#x27;smallDoses&#x27;:<br>			classLabelVector.append(2)<br>		elif listFromLine[-1] == &#x27;largeDoses&#x27;:<br>			classLabelVector.append(3)<br>		# 等于index = index + 1<br>		index += 1<br>	#检查标签是否全部都被赋值了<br>	print(len(classLabelVector))<br>	return returnMat, classLabelVector<br><br><br><br>if __name__ == &#x27;__main__&#x27;:<br>	filename = &#x27;D:\技能训练材料\数据分析、数据挖掘\实践项目\kNN\datingTestSet.txt&#x27;<br>	# 打开并处理数据<br>	datingDataMat, datingLabels = file2matrix(filename)<br></code></pre></td></tr></table></figure>
+
+
+
+<p>结果如下：1000个都已经赋值</p>
+<p><img src="/2022/07/07/k%E8%BF%91%E9%82%BB%E6%B3%95-k-nearest-neighbor-k-NN/../../%E6%8A%80%E8%83%BD%E8%AE%AD%E7%BB%83%E6%9D%90%E6%96%99/%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90%E3%80%81%E6%95%B0%E6%8D%AE%E6%8C%96%E6%8E%98/%E5%AE%9E%E8%B7%B5%E9%A1%B9%E7%9B%AE/%E5%9B%BE%E7%89%87/image-20220706231822222.png" alt="image-20220706231822222"></p>
+<h4 id="（2）分析数据：使用Matplotlib创建散点图"><a href="#（2）分析数据：使用Matplotlib创建散点图" class="headerlink" title="（2）分析数据：使用Matplotlib创建散点图"></a>（2）分析数据：使用Matplotlib创建散点图</h4><p>通过描述性统计，采用不同特征组合，看下数据是否根据类别不同有所区分。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><code class="hljs Python3"># -*- coding: UTF-8 -<br>import matplotlib.lines as mlines<br>import matplotlib.pyplot as plt<br>import numpy as np<br>from matplotlib.font_manager import FontProperties<br>#从kNN_dataset.py中引入file2matrix这个自定义函数（前面是地址，因人而异）<br>from 机器学习实践.kNN.kNN_dataset import file2matrix<br><br>&quot;&quot;&quot;&quot;&quot;<br>函数说明: 描述性统计-数据可视化-散点图<br><br>Parameters:<br>    datingDataMat - 特征矩阵<br>    datingLabels - 分类Label<br>Returns:<br>    无<br>Modify:<br>    2022-07-5<br>&quot;&quot;&quot;<br>def showdatas(datingDataMat, datingLabels):<br>	#设置汉字格式<br>	font = FontProperties(fname=r&quot;c:\windows\fonts\simkai.ttf&quot;,size=14)<br>	#将fig画布分隔成1行1列，不共享x轴和y轴，fig画布的大小为(13,8)<br>	#当nrow=2, nclos=2时，代表fig画布被分为四个区域，axs[0][0]标识第一行第一个区域<br>	fig,axs = plt.subplots(nrows=2, ncols=2, sharex=False, sharey=False, figsize=(13,8))<br>	number0fLabels = len(datingLabels)<br>	LabelsColors = []<br>	for i in datingLabels:<br>		if i == 1:<br>			LabelsColors.append(&#x27;black&#x27;)<br>		if i == 2:<br>			LabelsColors.append(&#x27;orange&#x27;)<br>		if i == 3:<br>			LabelsColors.append(&#x27;red&#x27;)<br>	#画出散点图,以datingDataMat矩阵的第一(飞行常客例程)、第二列(玩游戏)数据画散点数据,散点大小为15,透明度为0.5<br>	axs[0][0].scatter(x=datingDataMat[:,0], y=datingDataMat[:,1],color=LabelsColors, s=15, alpha=.5)<br>    #设置标题，x轴label，y轴label<br>	axs0_title_text = axs[0][0].set_title(u&#x27;每年获得的飞行常客里程数与玩视频游戏所消耗时间占比&#x27;, fontproperties=font)<br>	axs0_xlabel_text = axs[0][0].set_xlabel(u&#x27;每年获得的飞行常客里程数&#x27;, fontproperties=font)<br>	axs0_ylabel_text = axs[0][0].set_ylabel(u&#x27;玩视频游戏所消耗时间占&#x27;, fontproperties=font)<br>	plt.setp(axs0_title_text, size=9, weight=&#x27;bold&#x27;, color=&#x27;red&#x27;)<br>	plt.setp(axs0_xlabel_text, size=7, weight=&#x27;bold&#x27;, color=&#x27;black&#x27;)<br>	plt.setp(axs0_ylabel_text, size=7, weight=&#x27;bold&#x27;, color=&#x27;black&#x27;)<br><br>	# 画出散点图,以datingDataMat矩阵的第一(飞行常客例程)、第三列(冰激凌)数据画散点数据,散点大小为15,透明度为0.5<br>	axs[0][1].scatter(x=datingDataMat[:, 0], y=datingDataMat[:, 2], color=LabelsColors, s=15, alpha=.5)<br>	# 设置标题,x轴label,y轴label<br>	axs1_title_text = axs[0][1].set_title(u&#x27;每年获得的飞行常客里程数与每周消费的冰激淋公升数&#x27;, fontproperties=font)<br>	axs1_xlabel_text = axs[0][1].set_xlabel(u&#x27;每年获得的飞行常客里程数&#x27;, fontproperties=font)<br>	axs1_ylabel_text = axs[0][1].set_ylabel(u&#x27;每周消费的冰激淋公升数&#x27;, fontproperties=font)<br>	plt.setp(axs1_title_text, size=9, weight=&#x27;bold&#x27;, color=&#x27;red&#x27;)<br>	plt.setp(axs1_xlabel_text, size=7, weight=&#x27;bold&#x27;, color=&#x27;black&#x27;)<br>	plt.setp(axs1_ylabel_text, size=7, weight=&#x27;bold&#x27;, color=&#x27;black&#x27;)<br><br>	# 画出散点图,以datingDataMat矩阵的第二(玩游戏)、第三列(冰激凌)数据画散点数据,散点大小为15,透明度为0.5<br>	axs[1][0].scatter(x=datingDataMat[:, 1], y=datingDataMat[:, 2], color=LabelsColors, s=15, alpha=.5)<br>	# 设置标题,x轴label,y轴label<br>	axs2_title_text = axs[1][0].set_title(u&#x27;玩视频游戏所消耗时间占比与每周消费的冰激淋公升数&#x27;, fontproperties=font)<br>	axs2_xlabel_text = axs[1][0].set_xlabel(u&#x27;玩视频游戏所消耗时间占比&#x27;, fontproperties=font)<br>	axs2_ylabel_text = axs[1][0].set_ylabel(u&#x27;每周消费的冰激淋公升数&#x27;, fontproperties=font)<br>	plt.setp(axs2_title_text, size=9, weight=&#x27;bold&#x27;, color=&#x27;red&#x27;)<br>	plt.setp(axs2_xlabel_text, size=7, weight=&#x27;bold&#x27;, color=&#x27;black&#x27;)<br>	plt.setp(axs2_ylabel_text, size=7, weight=&#x27;bold&#x27;, color=&#x27;black&#x27;)<br><br>	# 设置图例<br>	didntLike = mlines.Line2D([], [], color=&#x27;black&#x27;, marker=&#x27;.&#x27;,<br>	                          markersize=6, label=&#x27;didntLike&#x27;)<br>	smallDoses = mlines.Line2D([], [], color=&#x27;orange&#x27;, marker=&#x27;.&#x27;,<br>	                           markersize=6, label=&#x27;smallDoses&#x27;)<br>	largeDoses = mlines.Line2D([], [], color=&#x27;red&#x27;, marker=&#x27;.&#x27;,<br>	                           markersize=6, label=&#x27;largeDoses&#x27;)<br>	# 添加图例<br>	axs[0][0].legend(handles=[didntLike, smallDoses, largeDoses])<br>	axs[0][1].legend(handles=[didntLike, smallDoses, largeDoses])<br>	axs[1][0].legend(handles=[didntLike, smallDoses, largeDoses])<br>	# 显示图片<br>	plt.show()<br><br>if __name__ == &#x27;__main__&#x27;:<br>	#打开的文件名<br>	filename = &quot;D:\技能训练材料\数据分析、数据挖掘\实践项目\kNN\datingTestSet.txt&quot;<br>	#打开并处理数据<br>	datingDataMat, datingLabels = file2matrix(filename)<br>	showdatas(datingDataMat, datingLabels)<br></code></pre></td></tr></table></figure>
+
+
+
+<p>结果如下：可以看到采用第一和第二种特征搭配，能够将三个群体较有效地区隔开来。</p>
+<p><img src="/2022/07/07/k%E8%BF%91%E9%82%BB%E6%B3%95-k-nearest-neighbor-k-NN/../../%E6%8A%80%E8%83%BD%E8%AE%AD%E7%BB%83%E6%9D%90%E6%96%99/%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90%E3%80%81%E6%95%B0%E6%8D%AE%E6%8C%96%E6%8E%98/%E5%AE%9E%E8%B7%B5%E9%A1%B9%E7%9B%AE/%E5%9B%BE%E7%89%87/image-20220706232126367.png" alt="image-20220706232126367"></p>
+<h4 id="（3）准备数据：归一化"><a href="#（3）准备数据：归一化" class="headerlink" title="（3）准备数据：归一化"></a>（3）准备数据：归一化</h4><p>根据下表可以看到，特征”每年获得的飞行常客里程数“整体数值远高出另外两种特征，因此在计算两个实例间的距离时，该特征的影响会被放大，因此需要将数值归一化，即将取值范围处理为0到1或者-1到1之间（<strong>三个特征值都同时被处理归一</strong>）。</p>
+<p><img src="/2022/07/07/k%E8%BF%91%E9%82%BB%E6%B3%95-k-nearest-neighbor-k-NN/../../%E6%8A%80%E8%83%BD%E8%AE%AD%E7%BB%83%E6%9D%90%E6%96%99/%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90%E3%80%81%E6%95%B0%E6%8D%AE%E6%8C%96%E6%8E%98/%E5%AE%9E%E8%B7%B5%E9%A1%B9%E7%9B%AE/%E5%9B%BE%E7%89%87/image-20220705235917444.png" alt="image-20220705235917444"></p>
+<p>具体归一化公式如下:<br>$$<br>newValue &#x3D; (oldValue - min)&#x2F;(max - min)<br>$$</p>
+<p>代码实现如下，主要思想是分别计算最大最小值，以及最大最小值之间的差，并在与原始值计算时将这些数值转化为矩阵模式来计算，按照如上的归一化公式计算得到最终新的特征矩阵：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><code class="hljs python3"># -*- coding: UTF-8 -<br>from 机器学习实践.kNN.kNN_dataset import file2matrix<br>import numpy as np<br><br><br>########特征数据归一化##########<br>&quot;&quot;&quot;<br>函数说明：对数据进行归一化<br><br>Parameters:<br>    dataSet - 特征矩阵<br>Returns:<br>    nomrDataSet - 归一化后的特征矩阵<br>    ranges - 数据范围<br>    minVals - 数据最小值<br><br>Modify:<br>    2022-07-06<br>&quot;&quot;&quot;<br><br><br>def autoNorm(dataSet):<br>	# 获得数据的最大最小值<br>	minVals = dataSet.min(0)<br>	maxVals = dataSet.max(0)<br>	ranges = maxVals - minVals<br>	# 获得dataSet的矩阵行列数，并据此形成零矩阵<br>	normDataSet = np.zeros(np.shape(dataSet))<br>	# 返回dataSet的行数<br>	m = dataSet.shape[0]<br>	# miVals在列向量上重复1次，在行向量上重复m次，计算原始数据和最小值之间的差<br>	normDataSet = dataSet - np.tile(minVals, (m, 1))<br>	# 归一化计算<br>	normDataSet = normDataSet / np.tile(ranges, (m, 1))<br>	return normDataSet, ranges, minVals<br><br>if __name__ == &#x27;__main__&#x27;:<br>	filename = &#x27;D:\技能训练材料\数据分析、数据挖掘\实践项目\kNN\datingTestSet.txt&#x27;<br>	datingDataMat, datingLabels = file2matrix(filename)<br>	normDataSet, ranges, minVals = autoNorm(datingDataMat)<br>	print(&quot;这是归一化矩阵\n&quot;,normDataSet)<br>	print(&quot;这是范围\n&quot;,ranges)<br>	print(&quot;这是最小值\n&quot;,minVals)<br></code></pre></td></tr></table></figure>
+
+<p>结果如下：</p>
+<p><img src="/2022/07/07/k%E8%BF%91%E9%82%BB%E6%B3%95-k-nearest-neighbor-k-NN/../../%E6%8A%80%E8%83%BD%E8%AE%AD%E7%BB%83%E6%9D%90%E6%96%99/%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90%E3%80%81%E6%95%B0%E6%8D%AE%E6%8C%96%E6%8E%98/%E5%AE%9E%E8%B7%B5%E9%A1%B9%E7%9B%AE/%E5%9B%BE%E7%89%87/image-20220706232408013.png" alt="image-20220706232408013"></p>
+<h4 id="（4）测试算法"><a href="#（4）测试算法" class="headerlink" title="（4）测试算法"></a>（4）测试算法</h4><p>采用错误率来测试算法是否准确，对于分类器来说，错误率就是分类器给出错误结果的次数除以测试数据的总数，完美分类器的错误率为0，而错误率为1.0的分类器不会给出任何正确的分类结果。</p>
+<p>代码实现如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><code class="hljs python3"># -*- coding: UTF-8 -<br>#########测试数据##########<br>from 机器学习实践.kNN.kNN_norm import autoNorm<br>from 机器学习实践.kNN.kNN_dataset import file2matrix<br>from 机器学习实践.kNN.kNN import classify0<br><br>&quot;&quot;&quot;<br>函数说明：计算该算法的错误率，涉及到拆分数据集为测试和训练数据集，到预测并计算<br><br>Parameters:<br>    无<br>Returns:<br>    无<br><br>Modify:<br>    2022-07-06<br>&quot;&quot;&quot;<br><br><br>def datingClassTest():<br>	# 取所有数据的10%作为测试数据，剩下90%为训练数据<br>	hoRatio = 0.10<br>	# 将返回的特征矩阵和分类向量分别存储进datingDataMat和datingLabels中<br>	datingDataMat, datingLabels = file2matrix(filename)<br>	# 数据归一化<br>	normMat, ranges, minVals = autoNorm(datingDataMat)<br>	# 获得normMat的行数<br>	m = normMat.shape[0]<br>	# 百分之十的测试数据个数<br>	numTestVecs = int(m * hoRatio)<br>	# 分类错误计数<br>	errorCount = 0.0<br>	for i in range(numTestVecs):<br>		# 前numTestVecs个数据作为测试集，后m-numTestVecs个数据作为训练集<br>		classifierResult = classify0(normMat[i,:], normMat[numTestVecs:m,:],datingLabels[numTestVecs:m], 3)<br>		print(&quot;the classifier came back with: %d, the real answer is: %d&quot; \<br>		      % (classifierResult, datingLabels[i]))<br>		if classifierResult != datingLabels[i]:<br>			errorCount += 1.0<br>	error_rate = errorCount / float(numTestVecs)<br>	print(&quot;the total error rate is: %f&quot; % (error_rate* 100))<br><br>if __name__ == &#x27;__main__&#x27;:<br>	filename = &#x27;D:\技能训练材料\数据分析、数据挖掘\实践项目\kNN\datingTestSet.txt&#x27;<br>	datingClassTest()<br><br></code></pre></td></tr></table></figure>
+
+<p>结果如下：可以看到本次结果有5%的可能性被分错</p>
+<p><img src="/2022/07/07/k%E8%BF%91%E9%82%BB%E6%B3%95-k-nearest-neighbor-k-NN/../../%E6%8A%80%E8%83%BD%E8%AE%AD%E7%BB%83%E6%9D%90%E6%96%99/%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90%E3%80%81%E6%95%B0%E6%8D%AE%E6%8C%96%E6%8E%98/%E5%AE%9E%E8%B7%B5%E9%A1%B9%E7%9B%AE/%E5%9B%BE%E7%89%87/image-20220706232522290.png" alt="image-20220706232522290"></p>
+<h4 id="（5）使用算法"><a href="#（5）使用算法" class="headerlink" title="（5）使用算法"></a>（5）使用算法</h4><figure class="highlight plaintext"><table><tr><td class="code"><pre><code class="hljs python3"># -*- coding: UTF-8 -<br>###########使用算法#################<br>from 机器学习实践.kNN.kNN_norm import autoNorm<br>from 机器学习实践.kNN.kNN_dataset import file2matrix<br>from 机器学习实践.kNN.kNN import classify0<br>import numpy as np<br><br>&quot;&quot;&quot;<br>函数说明:通过输入一个人的三维特征,进行分类输出<br><br>Parameters:<br>    无<br>Returns:<br>    无<br><br>Modify:<br>    2022-07-06<br>&quot;&quot;&quot;<br><br>def classifyPerson():<br>	resultList = [&#x27;不喜欢&#x27;, &#x27;有点喜欢&#x27;, &#x27;非常喜欢&#x27;]<br>	#Python3里面把raw-input和input整合在一起，默认接收str类型<br>	percentTats = float(input(&quot;玩视频游戏所耗时间百分比:&quot;))<br>	ffMiles = float(input(&quot;每年获得的飞机常客里程数:&quot;))<br>	iceCream = float(input(&quot;每周消费的冰淇淋公升数:&quot;))<br>	datitingDataMat, datingLabels = file2matrix(filename)<br>	normMat, ranges, minVals = autoNorm(datitingDataMat)<br>    #生成NumPy数组,测试集<br>	inArr = np.array([ffMiles, percentTats, iceCream])<br>    #返回分类结果<br>	classifierResult = classify0((inArr-minVals)/ranges,normMat,datingLabels,3)<br>	print(&quot;你可能%s这个人&quot; % (resultList[classifierResult - 1]))<br><br>if __name__ == &#x27;__main__&#x27;:<br>	filename = &#x27;D:\技能训练材料\数据分析、数据挖掘\实践项目\kNN\datingTestSet.txt&#x27;<br>	classifyPerson()<br><br></code></pre></td></tr></table></figure>
+
+<p>结果如下：输入三个特征维度值，预测结果如下，且可能有5%的概率是预测错误的。</p>
+<p><img src="/2022/07/07/k%E8%BF%91%E9%82%BB%E6%B3%95-k-nearest-neighbor-k-NN/../../%E6%8A%80%E8%83%BD%E8%AE%AD%E7%BB%83%E6%9D%90%E6%96%99/%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90%E3%80%81%E6%95%B0%E6%8D%AE%E6%8C%96%E6%8E%98/%E5%AE%9E%E8%B7%B5%E9%A1%B9%E7%9B%AE/%E5%9B%BE%E7%89%87/image-20220706233737086.png" alt="image-20220706233737086"></p>
+<h2 id="应用案例二：手写识别系统"><a href="#应用案例二：手写识别系统" class="headerlink" title="应用案例二：手写识别系统"></a>应用案例二：手写识别系统</h2><p>数据展示：第一个图片是文件夹打开后，将图像转化为.txt格式的二进制文件，文件名首位是该文件所代表的数值。</p>
+<p><img src="/2022/07/07/k%E8%BF%91%E9%82%BB%E6%B3%95-k-nearest-neighbor-k-NN/../../%E6%8A%80%E8%83%BD%E8%AE%AD%E7%BB%83%E6%9D%90%E6%96%99/%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90%E3%80%81%E6%95%B0%E6%8D%AE%E6%8C%96%E6%8E%98/%E5%AE%9E%E8%B7%B5%E9%A1%B9%E7%9B%AE/%E5%9B%BE%E7%89%87/image-20220707152627709.png" alt="image-20220707152627709"></p>
+<p>如下是文件打开后，是二进制图像</p>
+<p><img src="/2022/07/07/k%E8%BF%91%E9%82%BB%E6%B3%95-k-nearest-neighbor-k-NN/../../%E6%8A%80%E8%83%BD%E8%AE%AD%E7%BB%83%E6%9D%90%E6%96%99/%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90%E3%80%81%E6%95%B0%E6%8D%AE%E6%8C%96%E6%8E%98/%E5%AE%9E%E8%B7%B5%E9%A1%B9%E7%9B%AE/%E5%9B%BE%E7%89%87/image-20220707152833588.png" alt="image-20220707152833588"></p>
+<p>代码实现如下，基本思路和应用案例一一致，只是需要将每个图像转化为有1024个特征的向量：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><code class="hljs python3">import os<br>from os import listdir<br>import numpy as np<br>import operator<br>from 机器学习实践.kNN.kNN import classify0<br><br>##数据处理###<br>&quot;&quot;&quot;<br>函数说明：将32X32的二进制图像转化为1X1024向量<br><br>Parameters:<br>	filename - 文件名<br>Returns:<br>	returnVect - 返回的二进制图像的1X1024向量<br>	<br>Modify:<br>    2022-07-06<br>&quot;&quot;&quot;<br><br>def img2vector(filename):<br>	#创建一个1X1024的零向量<br>	returnVect = np.zeros((1,1024))<br>	fr = open(filename)<br>	for i in range(32):<br>		# readline()用于从文件每次读取一行，包括&quot;\n&quot;字符，该方法返回一个字符串对象<br>		lineStr = fr.readline()<br>		#i不变，列开始循环，每一次循环都将其中一行的数字填充到returnVect，列循环结束后，开启下一行。<br>		for j in range(32):<br>			returnVect[0, 3*i+j] = int(lineStr[j])<br>	return returnVect<br><br>##测试算法##<br>&quot;&quot;&quot;<br>函数说明：将32X32的二进制图像转化为1X1024向量<br><br>Parameters:<br>	filename - 文件名<br>Returns:<br>	returnVect - 返回的二进制图像的1X1024向量<br><br>Modify:<br>    2022-07-06<br>&quot;&quot;&quot;<br>def handwritingClassTest():<br>	hwLabels = []<br>	#打开训练数据文件，输出所有文件和文件夹<br>	trainingFileList = os.listdir(filename1)<br>	print(trainingFileList)<br>	#输出trainingFileList的元素数量<br>	m = len(trainingFileList)<br>	#形成一个m*1024的零矩阵<br>	trainingMat = np.zeros((m,1024))<br>	#以下的矩阵最终得到m*1024的实例矩阵<br>	for i in range(m):<br>		#将trainingFileList对应i位的元素给到fileNameStr，也就是文件名<br>		fileNameStr = trainingFileList[i]<br>		#按照&quot;.&quot;来进行分割，并取出第0位的元素,也就是文件名”0_0.txt&quot;前面的内容<br>		fileStr = (fileNameStr.split(&#x27;.&#x27;))[0]<br>		#取出文件名”0_0.txt&quot;的首位0<br>		classNumStr = int(fileStr.split(&#x27;_&#x27;)[0])<br>		#在hwLabels里面添加classNumStr<br>		hwLabels.append(classNumStr)<br>		#对trainingMat的每一行插入trainingDigits文件夹下的各个文件<br>		trainingMat[i,:] = img2vector(&#x27;%s\%s&#x27; % (filename1,fileNameStr))<br>	#打开测试数据文件，输出所有文件和文件夹<br>	testFileList = listdir(filename2)<br>	#设置错误率<br>	errorCount = 0.0<br>	#输出testFileList的元素数量<br>	mTest = len(testFileList)<br>	#以下内容逻辑和上面一样，不再赘述<br>	for i in range(mTest):<br>		fileNameStr = testFileList[i]<br>		fileStr = (fileNameStr.split(&#x27;.&#x27;))[0]<br>		classNumStr = int(fileStr.split(&#x27;_&#x27;)[0])<br>		vectorUnderTest = img2vector(&#x27;%s/%s&#x27; % (filename2,fileNameStr))<br>		#使用之前定义过的classify0来对该测试数据分类<br>		classifierResult = classify0(vectorUnderTest, trainingMat, hwLabels, 13)<br>		print (&quot;the classifier came back with: %d, the real answer is: %d&quot; % (classifierResult,classNumStr))<br>		if (classifierResult != classNumStr): errorCount +=1.0<br>	print(&quot;\nthe total numbber of errors is: %d&quot; % errorCount)<br>	print(&quot;\nthe total error rate is: %f&quot; % (errorCount/float(mTest)))<br><br>if __name__ == &#x27;__main__&#x27;:<br>	filename1 = r&#x27;D:\技能训练材料\数据分析、数据挖掘\软件\python\机器学习实战\机器学习实战（源代码）\Ch02\digits\trainingDigits&#x27;<br>	filename2 = r&#x27;D:\技能训练材料\数据分析、数据挖掘\软件\python\机器学习实战\机器学习实战（源代码）\Ch02\digits\testDigits&#x27;<br>	handwritingClassTest()<br><br></code></pre></td></tr></table></figure>
+
+<p>结果如下：可看到该模型测试后误差比较高，可以通过改变k值改变误差，但效果不太好，可能和模型或者数据相关。</p>
+<p><img src="/2022/07/07/k%E8%BF%91%E9%82%BB%E6%B3%95-k-nearest-neighbor-k-NN/../../%E6%8A%80%E8%83%BD%E8%AE%AD%E7%BB%83%E6%9D%90%E6%96%99/%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90%E3%80%81%E6%95%B0%E6%8D%AE%E6%8C%96%E6%8E%98/%E5%AE%9E%E8%B7%B5%E9%A1%B9%E7%9B%AE/%E5%9B%BE%E7%89%87/image-20220707153235119.png" alt="image-20220707153235119"></p>
+
+  </div>
+  <div id=""></div>
+</div>
+
+<script>
+  
+Fancybox.bind('[data-fancybox="fancybox-gallery-img"]', {
+  dragToClose: true,
+  Toolbar: true,
+  closeButton: "top",
+  Image: {
+    zoom: true,
+  },
+  on: {
+    initCarousel: (fancybox) => {
+      const slide = fancybox.Carousel.slides[fancybox.Carousel.page];
+      fancybox.$container.style.setProperty(
+        "--bg-image",
+        `url("${slide.$thumb.src}")`
+      );
+    },
+    "Carousel.change": (fancybox, carousel, to, from) => {
+      const slide = carousel.slides[to];
+      fancybox.$container.style.setProperty(
+        "--bg-image",
+        `url("${slide.$thumb.src}")`
+      );
+    },
+  },
+});
+</script>
+
+<style>
+    #noneimg img {
+        display: none;
+        z-index: 9999;
+        /* width: 600px !important; */
+        min-width: 0%;
+        max-width: 90%;
+        max-height: 80%;
+        border-radius: 0px;
+        position: fixed;
+        box-shadow: 0 0 0px #c3c3c300 !important;
+        left: 0;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        margin: auto !important;
+    }
+
+    @media screen and (max-width:600px) {
+        #noneimg img {
+            max-width: 88%
+        }
+    }
+</style>
+
+    <div class="post-paging">
+    
+
+    
+    <a href="/2022/07/04/hello-world/">
+        <div class="post-paging-next">
+            <span>下一篇</span>
+            <p>Hello World</p>
+        </div>
+    </a>
+    
+</div>
+</div>
+		
+<div class="footer">
+	<div class="Copyright">
+		©2022 By Yutong Zhu. 主题：<a
+			style="text-decoration: none;display: contents; color: #898F9F;"
+			target="_blank" rel="noopener" href="https://github.com/qiaobug/hexo-theme-quiet">Quiet</a>
+	</div>
+	<div class="contact">
+		
+		<a target="_blank" rel="noopener" href="https://github.com/79E/hexo-theme-quiet">
+			<img src="https://cdn.jsdelivr.net/gh/duogongneng/MyBlogImg/imggithub.png" alt="Quiet主题">
+		</a>
+		
+	</div>
+</div>
+
+<script src="/js/gotop.js"></script>
+
+
+<style type="text/css">
+    @media screen and (min-width: 600px) {
+        .goTop>span {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            opacity: 0.8;
+            background: rgba(18, 24, 58, 0.06);
+            text-align: center;
+            transition: border .5s;
+            border: 1px solid rgba(18, 24, 58, 0.06);
+
+            -moz-transition: border .5s;
+            /* Firefox 4 */
+            -webkit-transition: border .5s;
+            /* Safari 和 Chrome */
+            -o-transition: border .5s;
+            /* Opera */
+        }
+
+        .goTop>span:hover {
+            border: 1px solid #6680B3;
+        }
+
+
+        .goTop {
+            position: fixed;
+            right: 30px;
+            bottom: 80px;
+        }
+
+        .goTop>span>svg {
+            width: 20px;
+            height: 20px;
+            opacity: 0.7;
+        }
+
+    }
+
+    @media screen and (max-width: 600px) {
+        .goTop {
+            display: none;
+        }
+    }
+</style>
+<div class="goTop" id="js-go_top">
+    <span>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+            <g>
+                <path d="M13 12v8h-2v-8H4l8-8 8 8z"></path>
+            </g>
+        </svg>
+    </span>
+</div>
+<script>
+    $( '#js-go_top' )
+	.gotoTop( {
+		offset: 500,
+		speed: 300,
+		animationShow: {
+			'transform': 'translate(0,0)',
+			'transition': 'transform .5s ease-in-out'
+		},
+		animationHide: {
+			'transform': 'translate(100px,0)',
+			'transition': 'transform .5s ease-in-out'
+		}
+	} );
+</script>
+
+
+    <!-- Gitalk -->
+    <script>
+        const data = '{"clientID":"02b3c","clientSecret":"adfc7b4","repo":"gimment","owner":"duneng","admin":"duneng"}'
+        const gitalk = new Gitalk({
+            ...JSON.parse( data),
+            id:location.pathname,
+            distractionFreeMode:false
+        })
+        gitalk.render('gitalk-container')
+    </script>
+
+<script>
+	console.log('\n %c Hexo-Quiet 主题 %c https://github.com/QiaoBug/hexo-theme-quiet \n', 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;')
+</script>
+	</body>
+</html>
+
