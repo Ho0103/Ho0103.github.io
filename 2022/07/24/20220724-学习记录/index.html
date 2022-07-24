@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		
+<title>20220724 学习记录-Yutong</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="shortcut icon" type="image/x-icon" href="/image/favicon.ico">
+
+<link rel="stylesheet" href="/css/index.css">
+
+
+
+<meta name="keywords" content="学习笔记,">
+<meta name="description" content="前缀和方法；哈希表；python创建矩阵">
+
+
+<script src="/js/jquery.min.js"></script>
+
+
+<script src="/js/index.js"></script>
+
+
+<script src="/js/fancybox.umd.js"></script>
+
+
+<script src="/js/fancybox-images.js"></script>
+
+
+<script src="/js/gitalk.min.js"></script>
+
+
+<script src="/js/hljs.min.js"></script>
+
+<script>hljs.initHighlightingOnLoad();</script>
+
+	<meta name="generator" content="Hexo 6.2.0"></head>
+
+	<body>
+		
+	<div class="header">
+		<div class="header-top" id="header-top">
+			<div class="h-left">
+				<a href="/">
+					<img src="/image/logo.png" alt="Quiet">
+				</a>
+			</div>
+			<div class="h-right">
+				<ul>
+					
+						
+								<li>
+									<a href="/">
+										HOME
+									</a>
+									<span class="dot"></span>
+								</li>
+								
+									
+						
+								<li>
+									<a href="/archives">
+										ARCHIVE
+									</a>
+									<span class="dot"></span>
+								</li>
+								
+									
+						
+								<li>
+									<a href="/categories">
+										CATEGORIES
+									</a>
+									<span class="dot"></span>
+								</li>
+								
+									
+						
+								<li>
+									<a href="/tags">
+										TAGS
+									</a>
+									<span class="dot"></span>
+								</li>
+								
+									
+						
+								<li>
+									<a href="/links">
+										LINKS
+									</a>
+									<span class="dot"></span>
+								</li>
+								
+									
+						
+								<li>
+									<a href="/about">
+										ABOUT
+									</a>
+									<span class="dot"></span>
+								</li>
+								
+									
+				</ul>
+			</div>
+			<div class="h-right-close">
+				<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+					<path fill="none" d="M0 0h24v24H0z" />
+					<path d="M3 4h18v2H3V4zm0 7h18v2H3v-2zm0 7h18v2H3v-2z" fill="rgba(68,68,68,1)" />
+				</svg>
+			</div>
+		</div>
+	</div>
+	<div class="sidebar">
+    <div class="topo">
+        <h2>Yutong Zhu</h2>
+    </div>
+    <ul>
+        
+        <li>
+            <a href="/">HOME</a>
+        </li>
+        
+        <li>
+            <a href="/archives">ARCHIVE</a>
+        </li>
+        
+        <li>
+            <a href="/categories">CATEGORIES</a>
+        </li>
+        
+        <li>
+            <a href="/tags">TAGS</a>
+        </li>
+        
+        <li>
+            <a href="/links">LINKS</a>
+        </li>
+        
+        <li>
+            <a href="/about">ABOUT</a>
+        </li>
+        
+    </ul>
+    <div class="my_foot">
+        
+        <a target="_blank" rel="noopener" href="https://github.com/79E/hexo-theme-quiet">
+            <img src="https://cdn.jsdelivr.net/gh/duogongneng/MyBlogImg/imggithub.png" alt="Quiet主题">
+        </a>
+        
+    </div>
+</div>
+<div class='shelter'>
+</div>
+<style>
+    .shelter{
+        background-color: #333;
+        opacity:0.5;
+        cursor: pointer;
+        display: none; 
+        position: fixed;
+        left: 0;
+        top: 0; 
+        right: 0;
+        bottom: 0;
+        z-index: 1998;
+    }
+    .sidebar {
+        width: 0;
+        height: 100%;
+        position: fixed;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        background: #fff;
+        z-index: 1999;
+        text-align: center;
+        box-shadow: -6px 0 20px rgba(98, 94, 94, .815)
+    }
+
+    .topo {
+        width: 100%;
+        height: 200px;
+        background: url(https://api.ixiaowai.cn/gqapi/gqapi.php) no-repeat;
+        background-size: 100% 100%;
+        position: relative;
+        display: flex;
+        align-items: flex-end
+    }
+
+    .topo h2 {
+        color: #fff;
+        z-index: 1;
+        position: relative;
+        margin: 0 0 10px 10px;
+        font-size: 1.2em;
+        box-sizing: border-box
+    }
+
+    .topo:before {
+        content: '';
+        background-image: url(/image/pattern.png);
+        background-repeat: repeat;
+        height: 100%;
+        left: 0;
+        position: absolute;
+        top: 0;
+        width: 100%;
+        z-index: 1
+    }
+
+    .sidebar ul {
+        width: 100%;
+        margin-top: 50px
+    }
+
+    .sidebar ul li {
+        height: 50px;
+        list-style: none;
+        font-size: 1.2em;
+        text-align: right;
+        margin-right: 10px
+    }
+
+    .sidebar ul li a {
+        display: grid;
+        color: #5d606a;
+        text-overflow: ellipsis;
+        width: 100%;
+        text-decoration: none
+    }
+
+    .my_foot {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 10px;
+        position: absolute;
+        bottom: 0
+    }
+
+    .my_foot a {
+        text-decoration: none;
+        margin-right: 10px;
+        display: inline-block
+    }
+
+    .my_foot a img {
+        width: 30px;
+        height: 30px
+    }
+</style>
+
+<script>
+    $( function () {
+	$( '.h-right-close>svg' )
+		.click( function () {
+			$( '.sidebar' )
+				.animate( {
+					width: "66%"
+				}, 500 );
+			$( '.shelter' )
+				.fadeIn( "slow" )
+		} );
+	$( '.shelter' )
+		.click( function ( e ) {
+			$( '.sidebar' )
+				.animate( {
+					width: "0"
+				}, 500 );
+			$( '.shelter' )
+				.fadeOut( "slow" )
+		} )
+} )
+
+</script>
+
+<div class="post">
+    <div class="post-header-background post-header-img"
+    style="background: url('http://eett.cc/pictures?type=pc&category=fengjing')" 
+>
+    <div class="post-header-background-content">
+        <ul class="post-header-tag">
+            
+            
+            <li><a href="/tags/学习笔记">学习笔记</a></li>
+            
+            
+        </ul>
+        
+        <h1>20220724 学习记录</h1>
+        <div class="post-header-info">
+            <div class="post-header-info-author">
+                
+                    <svg t="1604839279282" class="icon" viewBox="0 0 1024 1024" version="1.1"
+                        xmlns="http://www.w3.org/2000/svg" p-id="2901" width="20" height="20">
+                        <path
+                            d="M513 956.3c-247.7 0-448-200.3-448-448S265.3 66.2 513 66.2s448 200.3 448 448-200.3 442.1-448 442.1z m0-830.9c-212.2 0-388.8 170.7-388.8 388.8C124.2 726.3 294.9 903 513 903c212.2 0 388.8-170.7 388.8-388.8S725.2 125.4 513 125.4z m0 430.2c-94.2 0-170.7-76.5-170.7-170.7S418.8 207.8 513 207.8s170.7 76.5 170.7 170.7S607.2 555.6 513 555.6z m0-289.1c-64.6 0-112 52.8-112 112s47.4 117.9 112 117.9 112-52.8 112-112-47.4-117.9-112-117.9z m0 689.8c-135.7 0-259-58.7-341.9-158.9l-11.8-17.8 11.8-17.8c76.5-117.9 206.2-188.5 347.8-188.5 135.7 0 265 64.6 341.9 182.6l11.8 17.8-11.8 17.8C778 897.1 648.7 956.3 513 956.3zM230.3 773.2C300.9 849.7 406.9 897 513 897c112 0 218.1-47.4 288.6-129.8-70.5-88.2-170.7-135.6-282.7-135.6s-218.1 53.3-288.6 141.6z"
+                            p-id="2902" fill="#ffffff"></path>
+                    </svg>
+                    
+                <span class="post-header-info-author-text"> <a href="../../about">Yutong Zhu</a></span>
+                <div class="post-header-info-author-categories">
+                    
+                         <a href="../../categories/日学习记录/" target="_blank" >日学习记录</a>
+                    
+                </div>
+                <p>2022-07-24 13:26:43</p>
+            </div>
+        </div>
+    </div>
+</div>
+    <div class="post-content" id="content">
+  <div id="article" class="post-content-info">
+      <h1 id="算法题：前缀和方法"><a href="#算法题：前缀和方法" class="headerlink" title="算法题：前缀和方法"></a>算法题：前缀和方法</h1><h2 id="leetcode-304-Range-Sum-Query-2D-Immutable"><a href="#leetcode-304-Range-Sum-Query-2D-Immutable" class="headerlink" title="leetcode 304 - Range Sum Query 2D - - Immutable"></a>leetcode 304 - Range Sum Query 2D - - Immutable</h2><img src="/2022/07/24/20220724-%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%95/image-20220724155426397.png" class title="image-20220724155426397">
+
+<p>如下是关于如何计算区域4（矩阵[0,0,3,4])的元素和思路</p>
+<p>参考：<a target="_blank" rel="noopener" href="https://blog.51cto.com/u_15295608/3045438">leetcode:304. 二维区域和检索 - 矩阵不可变_秃头哥编程的技术博客_51CTO博客</a></p>
+<p>![](20220724-学习记录&#x2F;image-20220724143655097.png</p>
+<img src="/2022/07/24/20220724-%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%95/image-20220724153042132.png" class title="image-20220724153042132">
+
+<p>区域4：f(i, j)</p>
+<p>区域3：f(i - 1, j)</p>
+<p>区域2：f(i, j - 1)</p>
+<p>区域1：f(i - 1, j - 1)</p>
+<p>所以：区域4 &#x3D; 区域3 + 区域2 - 区域1 + 10（matrix [i] [j]）</p>
+<h2 id="leetcode-525-Contiguous-Array"><a href="#leetcode-525-Contiguous-Array" class="headerlink" title="leetcode 525. Contiguous Array"></a>leetcode 525. Contiguous Array</h2><img src="/2022/07/24/20220724-%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%95/image-20220724161507173.png" class title="image-20220724161507173">
+
+
+
+<h1 id="Python"><a href="#Python" class="headerlink" title="Python"></a>Python</h1><h2 id="创建矩阵"><a href="#创建矩阵" class="headerlink" title="创建矩阵"></a>创建矩阵</h2><p>方法一：使用Numpy</p>
+<figure class="highlight stylus"><table><tr><td class="code"><pre><code class="hljs stylus">import numpy as np<br><br><span class="hljs-selector-id">#np</span>.empty方法来创建一个指定形状(shape)、数据类型(dtype)且未初始化的数组<br>x = np<span class="hljs-selector-class">.empty</span>(<span class="hljs-selector-attr">[3,2]</span>, dtype = int)<br><span class="hljs-function"><span class="hljs-title">print</span><span class="hljs-params">(x)</span></span><br><br>#同理empty可以换成zeros（<span class="hljs-number">0</span>矩阵）、ones（元素都为<span class="hljs-number">1</span>）、<span class="hljs-built_in">eyes</span>(单位矩阵（方正矩阵）)<br><br>#手动创建<br>x = np<span class="hljs-selector-class">.array</span>(<span class="hljs-selector-attr">[[1,2,5]</span>,<span class="hljs-selector-attr">[2,3,5]</span>,<span class="hljs-selector-attr">[3,4,5]</span>,<span class="hljs-selector-attr">[2,3,6]</span>])<br><span class="hljs-function"><span class="hljs-title">print</span><span class="hljs-params">(x)</span></span><br><br>#采用x<span class="hljs-selector-class">.shape</span><span class="hljs-selector-attr">[0]</span>输出矩阵行数，同理x<span class="hljs-selector-class">.shape</span><span class="hljs-selector-attr">[1]</span>输出矩阵列数<br></code></pre></td></tr></table></figure>
+
+
+
+<p>方法二：间接定义</p>
+<p>x &#x3D;  [[0 for i in range(3)] for i in range(3)]</p>
+<p>方法三：</p>
+<figure class="highlight maxima"><table><tr><td class="code"><pre><code class="hljs maxima">a = [<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>]<br><span class="hljs-built_in">matrix</span> = [a]*<span class="hljs-number">3</span><br><span class="hljs-built_in">print</span>(<span class="hljs-built_in">matrix</span>)<br><br>#需要注意，<span class="hljs-built_in">matrix</span> = [<span class="hljs-built_in">array</span>] * <span class="hljs-number">3</span>操作中，只是创建<span class="hljs-number">3</span>个指向<span class="hljs-built_in">array</span>的引用，所以一旦<span class="hljs-built_in">array</span>改变，<span class="hljs-built_in">matrix</span>中<span class="hljs-number">3</span>个list也会随之改变。<br><span class="hljs-built_in">matrix</span>[<span class="hljs-number">0</span>][<span class="hljs-number">1</span>] = <span class="hljs-number">5</span><br><span class="hljs-built_in">print</span>(<span class="hljs-built_in">matrix</span>)<br></code></pre></td></tr></table></figure>
+
+
+
+<h1 id="数据结构-哈希表"><a href="#数据结构-哈希表" class="headerlink" title="数据结构 - 哈希表"></a>数据结构 - 哈希表</h1><h2 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h2><ul>
+<li>散列表（Hash table，也叫哈希表），是根据关键码值(Key和value)而直接进行访问的数据结构。也就是说，它通过把关键码值映射到表中一个位置来访问记录，以加快查找的速度。这个映射函数叫做散列函数，存放记录的数组叫做散列表。</li>
+</ul>
+<h2 id="Leetcode-题-（1-TwoSum）"><a href="#Leetcode-题-（1-TwoSum）" class="headerlink" title="Leetcode 题 （1. TwoSum）"></a>Leetcode 题 （1. TwoSum）</h2><img src="/2022/07/24/20220724-%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%95/image-20220724170542699.png" class title="image-20220724170542699">
+
+<p>思路是利用字典将target和nums[i]之差与i对应并保存起来，然后用差去一一遍历nums内的元素，看是否对应，若能对应，那么就能返回题目所需要的两个元素在nums内的位置。</p>
+
+  </div>
+  <div id=""></div>
+</div>
+
+<script>
+  
+Fancybox.bind('[data-fancybox="fancybox-gallery-img"]', {
+  dragToClose: true,
+  Toolbar: true,
+  closeButton: "top",
+  Image: {
+    zoom: true,
+  },
+  on: {
+    initCarousel: (fancybox) => {
+      const slide = fancybox.Carousel.slides[fancybox.Carousel.page];
+      fancybox.$container.style.setProperty(
+        "--bg-image",
+        `url("${slide.$thumb.src}")`
+      );
+    },
+    "Carousel.change": (fancybox, carousel, to, from) => {
+      const slide = carousel.slides[to];
+      fancybox.$container.style.setProperty(
+        "--bg-image",
+        `url("${slide.$thumb.src}")`
+      );
+    },
+  },
+});
+</script>
+
+<style>
+    #noneimg img {
+        display: none;
+        z-index: 9999;
+        /* width: 600px !important; */
+        min-width: 0%;
+        max-width: 90%;
+        max-height: 80%;
+        border-radius: 0px;
+        position: fixed;
+        box-shadow: 0 0 0px #c3c3c300 !important;
+        left: 0;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        margin: auto !important;
+    }
+
+    @media screen and (max-width:600px) {
+        #noneimg img {
+            max-width: 88%
+        }
+    }
+</style>
+
+    <div class="post-paging">
+    
+
+    
+    <a href="/2022/07/12/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E6%9D%90%E6%96%99%E5%8F%8A%E7%9B%AE%E5%BD%95/">
+        <div class="post-paging-next">
+            <span>下一篇</span>
+            <p>机器学习材料及目录</p>
+        </div>
+    </a>
+    
+</div>
+</div>
+		
+<div class="footer">
+	<div class="Copyright">
+		©2022 By Yutong Zhu. 主题：<a
+			style="text-decoration: none;display: contents; color: #898F9F;"
+			target="_blank" rel="noopener" href="https://github.com/qiaobug/hexo-theme-quiet">Quiet</a>
+	</div>
+	<div class="contact">
+		
+		<a target="_blank" rel="noopener" href="https://github.com/79E/hexo-theme-quiet">
+			<img src="https://cdn.jsdelivr.net/gh/duogongneng/MyBlogImg/imggithub.png" alt="Quiet主题">
+		</a>
+		
+	</div>
+</div>
+
+<script src="/js/gotop.js"></script>
+
+
+<style type="text/css">
+    @media screen and (min-width: 600px) {
+        .goTop>span {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            opacity: 0.8;
+            background: rgba(18, 24, 58, 0.06);
+            text-align: center;
+            transition: border .5s;
+            border: 1px solid rgba(18, 24, 58, 0.06);
+
+            -moz-transition: border .5s;
+            /* Firefox 4 */
+            -webkit-transition: border .5s;
+            /* Safari 和 Chrome */
+            -o-transition: border .5s;
+            /* Opera */
+        }
+
+        .goTop>span:hover {
+            border: 1px solid #6680B3;
+        }
+
+
+        .goTop {
+            position: fixed;
+            right: 30px;
+            bottom: 80px;
+        }
+
+        .goTop>span>svg {
+            width: 20px;
+            height: 20px;
+            opacity: 0.7;
+        }
+
+    }
+
+    @media screen and (max-width: 600px) {
+        .goTop {
+            display: none;
+        }
+    }
+</style>
+<div class="goTop" id="js-go_top">
+    <span>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+            <g>
+                <path d="M13 12v8h-2v-8H4l8-8 8 8z"></path>
+            </g>
+        </svg>
+    </span>
+</div>
+<script>
+    $( '#js-go_top' )
+	.gotoTop( {
+		offset: 500,
+		speed: 300,
+		animationShow: {
+			'transform': 'translate(0,0)',
+			'transition': 'transform .5s ease-in-out'
+		},
+		animationHide: {
+			'transform': 'translate(100px,0)',
+			'transition': 'transform .5s ease-in-out'
+		}
+	} );
+</script>
+
+
+    <!-- Gitalk -->
+    <script>
+        const data = '{"clientID":"02b3c","clientSecret":"adfc7b4","repo":"gimment","owner":"duneng","admin":"duneng"}'
+        const gitalk = new Gitalk({
+            ...JSON.parse( data),
+            id:location.pathname,
+            distractionFreeMode:false
+        })
+        gitalk.render('gitalk-container')
+    </script>
+
+<script>
+	console.log('\n %c Hexo-Quiet 主题 %c https://github.com/QiaoBug/hexo-theme-quiet \n', 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;')
+</script>
+	</body>
+</html>
+
