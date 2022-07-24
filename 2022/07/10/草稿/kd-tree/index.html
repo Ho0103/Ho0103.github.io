@@ -2,7 +2,7 @@
 <html>
 	<head>
 		
-<title>朴素贝叶斯-Yutong</title>
+<title>kd tree-Yutong</title>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -284,7 +284,7 @@
             
         </ul>
         
-        <h1>朴素贝叶斯</h1>
+        <h1>kd tree</h1>
         <div class="post-header-info">
             <div class="post-header-info-author">
                 
@@ -299,14 +299,21 @@
                 <div class="post-header-info-author-categories">
                     
                 </div>
-                <p>2022-07-12 21:02:14</p>
+                <p>2022-07-10 21:52:38</p>
             </div>
         </div>
     </div>
 </div>
     <div class="post-content" id="content">
   <div id="article" class="post-content-info">
-      
+      <p>参考：<a target="_blank" rel="noopener" href="https://www.wangt.cc/2021/12/ann-%E6%A0%91%E6%96%B9%E6%B3%95/">ANN 树方法 | 程序员灯塔 (wangt.cc)</a></p>
+<p>kd-tree(k dimensional tree )是树方法的经典算法，其是二分搜索树在多维空间的推广。二分搜索树检索迅速的原因是规定将数据中大于当前节点数据的方在一侧(比如右子树)，而不小于的放在另一侧(比如左子树),这样检索数据时，即可获得<code>logn</code>的速度。kd-tree 也类似,也是二叉搜索树，只不过其中的一维数据变成了n维数据。如同x-y轴坐标系将二维空间分成四个部分一样， n维空间也可这样划分。然后，规定将大于分割点的数据放在某一侧(比如右子树)，不小于分割点的数据放在另一侧(比如左子树)。 <code>kd-tree</code> 适用(N&gt;&gt;2^k) 的情形，其中N为数据数量。不过实际生产中，k不能太大，一般10维左右时，效果不错，最好不要超过20维</p>
+<p>kd-tree相对于二叉搜索树维度变多了，操作基本一致，只有一点需要注意：因为kd-tree中的数据是多于一维的，那么每次分叉时(即划分)时，需要操作某一维度，因此涉及如何选取维度以及在此维度下用哪个数据点划分 。</p>
+<p>为使得数据划分相对均匀些，应选这样的维度：在此维度上，数据非常分散， 分散程度可用方差来表示。方差越大说明数据越分散，也即就数据划分后会相对平衡。(有时也会为了效率根据一定规则选取，比如哈希等)</p>
+<p>当选好维度后，可以直选取此维度中位数据划分即可， 有时中位数据不在数据中， 那么只需用与中位数最近数据点即可。</p>
+<p>然后迭代上述过程，直至建树完成。</p>
+<p>以下简易代码[3]：</p>
+
   </div>
   <div id="gitalk-container"></div>
 </div>
@@ -366,19 +373,19 @@ Fancybox.bind('[data-fancybox="fancybox-gallery-img"]', {
 
     <div class="post-paging">
     
-    <a href="/2022/07/12/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E6%9D%90%E6%96%99%E5%8F%8A%E7%9B%AE%E5%BD%95/">
+    <a href="/2022/07/12/%E8%8D%89%E7%A8%BF/%E6%9C%B4%E7%B4%A0%E8%B4%9D%E5%8F%B6%E6%96%AF/">
         <div class="post-paging-last">
             <span>上一篇</span>
-            <p>机器学习材料及目录</p>
+            <p>朴素贝叶斯</p>
         </div>
     </a>
     
 
     
-    <a href="/2022/07/10/kd-tree/">
+    <a href="/2022/07/08/%E8%8D%89%E7%A8%BF/%E5%86%B3%E7%AD%96%E6%A0%91/">
         <div class="post-paging-next">
             <span>下一篇</span>
-            <p>kd tree</p>
+            <p>决策树</p>
         </div>
     </a>
     
